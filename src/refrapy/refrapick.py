@@ -1806,8 +1806,8 @@ E-mail: vjs279@hotmail.com
                                 for xpick, tpick in zip(sortedxpicks, sortedtpicks):
                                     # s = where(sgx == self.sources[i])[0][0]+1
                                     # g = where(sgx == xpick)[0][0]+1
-                                    s = isclose(array(sgx), array(self.sources[i])).nonzero()[0] + 1
-                                    g = isclose(array(sgx), array(xpick)).nonzero()[0] + 1
+                                    s = isclose(array(sgx), array(self.sources[i])).nonzero()[0][0] + 1
+                                    g = isclose(array(sgx), array(xpick)).nonzero()[0][0] + 1
                                     t = tpick
                                     outFile.write("%d %d %.6f\n" % (s, g, t))
 
