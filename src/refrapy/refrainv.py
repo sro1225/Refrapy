@@ -1158,13 +1158,37 @@ E-mail: vjs279@hotmail.com
                 clippath = Path(limits)
                 patch = PathPatch(clippath, facecolor="none", alpha=0)
                 self.ax_tomography.add_patch(patch)
-
-                patch = PathPatch(clippath, facecolor="none", alpha=0)
+                from matplotlib.patches import PathPatch
+                from matplotlib.path import Path
+                
+                # ... (your code above that builds `limits`)
+                
+                clippath = Path(limits)
+                
+                # Build the patch *in data coordinates* (critical for Matplotlib ≥3.8)
+                patch = PathPatch(
+                    clippath,
+                    facecolor="none",
+                    alpha=0,
+                    transform=self.ax_tomography.transData
+                )
+                
+                # It's optional to add the patch (kept for clarity/debugging)
                 self.ax_tomography.add_patch(patch)
-
-                for c in cm.collections:
-                    c.set_clip_path(patch)
-
+                
+                # Matplotlib ≥3.8 (incl. 3.10): QuadContourSet is a Collection → clip it directly
+                if hasattr(cm, "set_clip_path"):
+                    cm.set_clip_path(patch)
+                else:
+                    # Fallback for older Matplotlib (<3.8) where `collections` existed
+                    for coll in getattr(cm, "collections", []):
+                        coll.set_clip_path(patch)
+                        patch = PathPatch(clippath, facecolor="none", alpha=0)
+                        self.ax_tomography.add_patch(patch)
+                        
+#                for c in cm.collections:
+#                    c.set_clip_path(patch)
+                    #c.set_clip_path(patch) # collection deprecated in matplotlib >3.8 
                 if self.showRayPath:
                     self.mgr.drawRayPaths(self.ax_tomography, color=self.rayPathColor)
 
